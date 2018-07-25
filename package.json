@@ -4,10 +4,9 @@
   "description": "XReactJS",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "test" : "echo \"Error : no test specified \" && exit 1",
+    "start": "set PORT =3330 && npm run build && react-scripts start",
+    "build": "react-scripts build"
   },
   "keywords": [
     "XReactJS"
