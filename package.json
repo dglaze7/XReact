@@ -1,0 +1,26 @@
+{
+  "name": "xreactjs",
+  "version": "1.0.0",
+  "description": "XReactJS",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "keywords": [
+    "XReactJS"
+  ],
+  "author": "Doni",
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/core": "^1.4.0",
+    "@material-ui/icons": "^1.1.0",
+    "material-ui": "^0.20.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^1.1.4"
+  }
+}
