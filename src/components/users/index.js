@@ -8,80 +8,93 @@ import CreateUser from './create';
 import Edit from './edit';
 import DeleteUser from './delete';
 import { Button } from '../../../node_modules/@material-ui/core';
+import { config } from '../configurations/config';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 
 
 
-export default class extends React.Component {
+class Users extends React.Component {
+
+    userModel = 
+    {
+        _id: '',
+        userName: '',
+        first: '', 
+        mid: '',
+        last: '',
+        email: '',
+        phone: '',
+        active: true
+    }
+
+
     constructor(props) {
         super(props);
         this.state = {
-            users: [
-                {
-                    "_id": "1",
-                    "userName": "Doni",
-                    "password": "DoniAja",
-                    "email": "rama_doni17@ymail.commm",
-                    "name": {
-                        "first": "Ramadhoni",
-                        "mid": "Suryo",
-                        "last": "Suharto"
-                    },
-                    "phone": "08123123123",
-                    "active": "1"
-
-                },
-
-                {
-                    "_id": "2",
-                    "userName": "Mbappe",
-                    "password": "MbappeAja",
-                    "email": "mbappeaja@yahoo.com",
-                    "name": {
-                        "first": "Kylian",
-                        "mid": "M",
-                        "last": "Mbappe"
-                    },
-                    "phone": "0812381283",
-                    "active": "1"
-                },
-
-                {
-                    "_id": "3",
-                    "userName": "iningasal",
-                    "password": "asalaja",
-                    "email": "asalaja.com",
-                    "name": {
-                        "first": "Ngasal",
-                        "mid": "M",
-                        "last": "Com"
-                    },
-                    "phone": "53512421312",
-                    "active": "1"
-                },
-
-            ],
+            users: [],
             createNew: false,
             editUser: false,
-            deletUser : false,
-            user: { _id: 0, userName: '', first: '', mid: '', last: '', email: '', phone: '', active: '' }
+            deletUser: false,
+            loading: true,
+            user: this.userModel
         }
-
     }
+
+    reloadUserData = () => {
+        axios.get(config.url + '/users')
+        .then(res => {
+            this.setState({
+                users : res.data,
+                createNew : false,
+                editUser : false,
+                deleteUser : false, 
+                user : this.userModel,
+                loading : false
+            })
+        })
+        .catch((error) => {
+            alert(error);
+        })
+    }
+
+    componentDidMout(){
+        this.reloadUserData();
+    }
+
+    //API connect ke cloud
+    componentDidMount() {
+        axios.get(config.url + '/users')
+            .then(res => {
+                this.setState({
+                    users: res.data,
+                    loading: false
+                })
+            })
+
+            .catch((error) => {
+                alert(error)
+            })
+    }
+
     //toggle
     handleToggle = () => {
         this.setState({
             createNew: true
         })
     }
-   
-  
+
+
     //tutup
     handleClose = () => {
         this.setState({
-            createNew: false ,
-            editUser : false,
-            deleteUser : false,
-            user: { _id: 0, userName: '', first: '', mid: '', last: '', email: '', phone: '', active: '' }
+            createNew: false,
+            editUser: false,
+            deleteUser: false,
+            user: this.userModel
         })
     }
     //bisa diketik
@@ -93,15 +106,23 @@ export default class extends React.Component {
             }
         })
     }
+
+    handleChangeCheckBox = name => event => {
+        this.setState({
+            user: {
+                ...this.state.user,
+                [name]: event.target.checked
+            }
+        })
+    }
+
     //submit data
 
     handleSubmit = () => {
-        const { user, users, createNew } = this.state;
-        const newId = parseInt(users[users.length -1]._id) + 1;
-
+        const { user, createNew } = this.state;
         let newUser =
         {
-            _id: createNew ? newId : user._id,
+         
             userName: user.userName,
             name: {
                 first: user.first,
@@ -113,23 +134,31 @@ export default class extends React.Component {
             active: user.active
         }
 
-        if(createNew){
-            users.push(newUser)
-        }else{
-            let idx = users.findIndex( u => u._id === newUser._id);
-            users[idx] = newUser;
-        }
-        
-        this.setState({
-            createNew: false,
-            editUser : false,
-            user: { _id: 0, userName: '', first: '', mid: '', last: '', email: '', phone: '', active: '' },
-            users: users
-        })
+        if (createNew) {
+            axios.post(config.url + '/users', newUser)
+                .then(res => {
+                    this.reloadUserData();
+                    alert('User has been saved');
+                })
+                .catch((error) => {
+                    alert(error)
+                })
 
-        
+
+        } else {
+            axios.put(config.url + '/users/' + user._id , newUser)
+            .then(res => {
+                this.reloadUserData();
+                alert ('User has been saved');
+            })
+            .catch((error) => {
+                alert(error)
+            })
+
+      
+        }
     }
-    
+
     handleEdit = (_id) => {
         const { users } = this.state;
         const user = users.find(u => u._id === _id);
@@ -148,7 +177,7 @@ export default class extends React.Component {
             }
         })
     }
-     //hapus data
+    //hapus data
     handleDelete = (_id) => {
         const { users } = this.state;
         const user = users.find(u => u._id === _id);
@@ -168,27 +197,33 @@ export default class extends React.Component {
     }
 
     handleDeleteConfirm = () => {
-        const {users , user} = this.state;
-        let idx = users.findIndex(u => u._id === user._id)
-        users.splice(idx,1);
-        this.setState({
-            deleteUser: false,
-            user: { _id: 0, userName: '', first: '', mid: '', last: '', email: '', phone: '', active: '' }
+        const { user } = this.state;
+        axios.delete(config.url + '/users/' + user._id )
+        .then(res => {
+            this.reloadUserData();
+            alert ('User has been deleted');
         })
-
+        .catch((error) => {
+            alert(error)
+        })
+    
     }
 
     render() {
-        const users = this.state.users;
+        const { users, loading } = this.state;
+        const { classes } = this.props;
+
         return (
             <div>
                 <h3><center>List Of Users</center></h3>
 
-                <CreateUser createNew={this.state.createNew} handleToggle={this.handleToggle} handleClose={this.handleClose} handleChange={this.handleChange} handleSubmit={this.handleSubmit} user={this.state.user} />
+                <CreateUser createNew={this.state.createNew} handleToggle={this.handleToggle} handleClose={this.handleClose} handleChange={this.handleChange} handleSubmit={this.handleSubmit} handleChangeCheckBox = {this.handleChangeCheckBox} user={this.state.user} />
 
-                <Edit editUser={this.state.editUser} handleToggle={this.handleToggle} handleClose={this.handleClose} handleChange={this.handleChange} handleSubmit={this.handleSubmit} user={this.state.user} />
+                <Edit editUser={this.state.editUser} handleToggle={this.handleToggle} handleClose={this.handleClose} handleChange={this.handleChange} handleSubmit={this.handleSubmit} handleChangeCheckBox = {this.handleChangeCheckBox}  user={this.state.user} />
 
-                <DeleteUser deleteUser={this.state.deleteUser} handleClose={this.handleClose} handleDelete={this.handleDeleteConfirm} user={this.state.user} />
+                <DeleteUser deleteUser={this.state.deleteUser} handleClose={this.handleClose} handleDelete={this.handleDeleteConfirm} handleChangeCheckBox = {this.handleChangeCheckBox}  user={this.state.user} />
+
+                <CircularProgress className={classes.progress} style={{ visibility: (loading ? 'visible' : 'hidden') }} color="secondary" />
 
                 <Table>
                     <TableHead>
@@ -199,7 +234,7 @@ export default class extends React.Component {
                             <TableCell >Phones </TableCell>
                             <TableCell >Active </TableCell>
                             <TableCell >Action </TableCell>
-                       
+
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -214,7 +249,10 @@ export default class extends React.Component {
                                         (n.name.last ? n.name.last + " " : "")}</TableCell>
                                     <TableCell>{n.email}</TableCell>
                                     <TableCell>{n.phone}</TableCell>
-                                    <TableCell>{n.active}</TableCell>
+                                    <TableCell>
+                                    {/* {n.active} */}
+                                    <Checkbox checked= {n.active} value = "active"/>
+                                    </TableCell>
                                     <TableCell>
                                         <Button onClick={() => this.handleEdit(n._id)} variant="contained" color="primary"> Edit</Button>
                                         <Button onClick={() => this.handleDelete(n._id)} variant="contained" color="secondary">Delete</Button>
@@ -228,3 +266,18 @@ export default class extends React.Component {
         )
     }
 }
+
+const styles = theme => ({
+    progress: {
+        position: 'absolute',
+        alignSelf: 'center',
+        top: '50%',
+        left: '50%',
+    },
+});
+
+Users.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Users);

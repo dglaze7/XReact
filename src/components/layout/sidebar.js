@@ -10,8 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Divider from '@material-ui/core/Divider';
 import Users from '../users';
-import Cobas from '../cobas';
-
+import Categories from '../categories' ;
+import Tables from '../tables';
 
 export default class SideBar extends React.Component {
     render() {
@@ -28,15 +28,23 @@ export default class SideBar extends React.Component {
                     <Divider />
                     <List onClick={() => onSelected()}>
                         <ListItem className={classes.ListItem}><HomeIcon className={classes.MenuIcon} /><Link to="/home" className={classes.MenuList}>Home</Link></ListItem>
+
                         <ListItem className={classes.ListItem}><HomeIcon className={classes.MenuIcon} /><Link to="/users" className={classes.MenuList}>Users</Link></ListItem>
-                        <ListItem className={classes.ListItem}><HomeIcon className={classes.MenuIcon} /><Link to="/cobas" className={classes.MenuList}>Cobas</Link></ListItem>
+
+                        <ListItem className={classes.ListItem}><HelpIcon className={classes.MenuIcon} /><Link to="/categories" className={classes.MenuList}>Categories</Link></ListItem>
+
+                        
+                        <ListItem className={classes.ListItem}><HelpIcon className={classes.MenuIcon} /><Link to="/tables" className={classes.MenuList}>Tables</Link></ListItem>
+
                         <ListItem className={classes.ListItem}><HelpIcon className={classes.MenuIcon} /><Link to="/help" className={classes.MenuList}>Help</Link></ListItem>
                     </List>
                 </Drawer>
                 <Route exact path="/home" component={Home} />
-                <Route exact path="/cobas" component={Cobas} />
                 <Route exact path="/users" component={Users} />
+                <Route exact path="/categories" component={Categories} />
+                <Route exact path="/tables" component={Tables} />
                 <Route exact path="/help" component={Help} />
+
             </div>
         )
     }

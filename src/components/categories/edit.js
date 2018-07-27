@@ -10,10 +10,10 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
-export default ({editUser, handleClose , handleChange, handleSubmit, handleChangeCheckBox, user : {userName, first, mid, last, email, phone, active}}) => {
+export default ({editCategory, handleClose , handleChange, handleChangeCheckBox, handleSubmit, category : { initial, name, active}}) => {
     return <Fragment>
         <Dialog
-            open={editUser}
+            open={editCategory}
             onClose={handleClose}
         >
             <DialogTitle id="alert-dialog-title">{"Update User"}</DialogTitle>
@@ -22,18 +22,10 @@ export default ({editUser, handleClose , handleChange, handleSubmit, handleChang
                   Please edit the data
             </DialogContentText>
             <form>
-                <TextField label = 'User Name' value = {userName} onChange = {handleChange('userName')} margin = 'normal'/>
-                &nbsp;
-                <TextField label = 'First Name' value = {first} onChange = {handleChange('first')}  margin = 'normal'/>
+                <TextField label = 'Initial' value = {initial} onChange = {handleChange('initial')}  margin = 'normal'/>
                 <br/>
-                <TextField label = 'Mid Name' value = {mid} onChange = {handleChange('mid')} margin = 'normal'/>
+                <TextField label = 'Name' value = {name} onChange = {handleChange('name')} margin = 'normal'/>
                 &nbsp;
-                <TextField label = 'Last Name' value = {last} onChange = {handleChange('last')} margin = 'normal'/>
-                <br/>
-                <TextField label = 'Email' value = {email} onChange = {handleChange('email')} margin = 'normal'/>
-                &nbsp;
-                <TextField label = 'Phone' value = {phone} onChange = {handleChange('phone')} margin = 'normal'/>
-                <br/>
                 <FormControlLabel
                         control={
                             <Switch
@@ -44,7 +36,6 @@ export default ({editUser, handleClose , handleChange, handleSubmit, handleChang
                             />
                         }
                         label="Active"/>
-                &nbsp;
             </form>
             </DialogContent>
             <DialogActions>
